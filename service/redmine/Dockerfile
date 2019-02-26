@@ -9,8 +9,11 @@ RUN set -eux \
     && : "Install dockerize" \
     && wget -O dockerize.tar.gz "https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz" \
     && tar -xzvf dockerize.tar.gz -C /usr/local/bin \
-    && rm dockerize.tar.gz
+    && rm dockerize.tar.gz \
+    && apt-get update \
+    && apt-get install -y vim
 
 ADD tmpl.configuration.yml /usr/src/redmine/config/
+ADD 20190226_insert_settings.rb /usr/src/redmine/db/migrate/
 
 ENTRYPOINT dockerize -template ${CONF_DIR}/tmpl.configuration.yml:${CONF_DIR}/configuration.yml -wait tcp://dbms:${DB_PORT} /docker-entrypoint.sh passenger start
